@@ -8,7 +8,7 @@ class ProductDetailAPIView(generics.RetrieveAPIView):
     serializer_class = ProductSerializer
     # lookup_field = 'pk' 
 
-class ProductCreateAPIView(generics.CreateAPIView):
+class ProductListCreateAPIView(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
@@ -21,3 +21,10 @@ class ProductCreateAPIView(generics.CreateAPIView):
         if content is None:
             content = title
         serializer.save(content=content)
+
+class ProductListAPIView(generics.ListAPIView):
+    '''
+    Not gonna use this method
+    '''
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
