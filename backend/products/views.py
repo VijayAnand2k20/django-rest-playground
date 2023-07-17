@@ -1,9 +1,14 @@
 from django.shortcuts import get_object_or_404
 
-from rest_framework import generics
+from rest_framework import (
+    generics,
+    mixins,
+    permissions,
+    authentication
+)
+
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework import mixins
 
 
 from .models import Product
@@ -17,6 +22,8 @@ class ProductDetailAPIView(generics.RetrieveAPIView):
 class ProductListCreateAPIView(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    authentication_classes = [authentication.SessionAuthentication]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def perform_create(self, serializer):
         # Can also be used to send django signals
