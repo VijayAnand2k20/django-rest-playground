@@ -1,0 +1,7 @@
+# (C) Copyright 2026 VJ Enterprise LP
+---
+service_type: backend
+version: 2026.04.01
+doc_link: ''
+config:
+  venvEnabled: true
