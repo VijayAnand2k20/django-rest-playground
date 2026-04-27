@@ -23,13 +23,17 @@ jobs:
           python-version: '3.x'
 
       - name: Install dependencies
+        if: hashFiles('requirements.txt') != ''
         run: pip install -r requirements.txt
 
       - name: Create release archive
         run: |
           zip -r django-rest-playground-${{ github.ref_name }}.zip . \
-            --exclude ".git/*" \
-            --exclude ".github/*"
+            --exclude "./.git/*" \
+            --exclude "./.github/*" \
+            --exclude "./__pycache__/*" \
+            --exclude "./*.pyc" \
+            --exclude "./.pytest_cache/*"
 
       - name: Create GitHub Release
         env:
