@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     tags:
-      - 'v*'
+      - '*VJAI*'
 
 permissions:
   contents: write
@@ -19,8 +19,14 @@ jobs:
 
       - name: Zip folders
         run: |
-          zip -r backend.zip backend/
-          zip -r py_client.zip py_client/
+          BACKEND_VERSION=$(grep '^version:' backend/info.yml | awk '{print $2}')
+          PY_CLIENT_VERSION=$(grep '^version:' py_client/info.yml | awk '{print $2}')
+          if [ -z "$BACKEND_VERSION" ]; then echo "Error: version not found in backend/info.yml" && exit 1; fi
+          if [ -z "$PY_CLIENT_VERSION" ]; then echo "Error: version not found in py_client/info.yml" && exit 1; fi
+          echo "BACKEND_ZIP=backend_${BACKEND_VERSION}_VJAI.zip" >> $GITHUB_ENV
+          echo "PY_CLIENT_ZIP=py_client_${PY_CLIENT_VERSION}_VJAI.zip" >> $GITHUB_ENV
+          zip -r "backend_${BACKEND_VERSION}_VJAI.zip" backend/
+          zip -r "py_client_${PY_CLIENT_VERSION}_VJAI.zip" py_client/
 
       - name: Create GitHub Release
         env:
@@ -30,4 +36,4 @@ jobs:
             --repo "${{ github.repository }}" \
             --title "Release ${{ github.ref_name }}" \
             --generate-notes \
-            backend.zip py_client.zip
+            "${{ env.BACKEND_ZIP }}" "${{ env.PY_CLIENT_ZIP }}"
