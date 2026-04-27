@@ -9,39 +9,18 @@ permissions:
   contents: write
 
 jobs:
-  zip-artifacts:
-    name: Zip ${{ matrix.folder }}
+  release:
+    name: Create GitHub Release
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        folder:
-          - backend
-          - py_client
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Create ${{ matrix.folder }}.zip
-        run: zip -r ${{ matrix.folder }}.zip ${{ matrix.folder }}/
-
-      - name: Upload ${{ matrix.folder }}.zip
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ matrix.folder }}
-          path: ${{ matrix.folder }}.zip
-
-  release:
-    name: Create GitHub Release
-    runs-on: ubuntu-latest
-    needs: zip-artifacts
-
-    steps:
-      - name: Download all artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: artifacts/
-          merge-multiple: true
+      - name: Zip folders
+        run: |
+          zip -r backend.zip backend/
+          zip -r py_client.zip py_client/
 
       - name: Create GitHub Release
         env:
@@ -51,4 +30,4 @@ jobs:
             --repo "${{ github.repository }}" \
             --title "Release ${{ github.ref_name }}" \
             --generate-notes \
-            artifacts/*.zip
+            backend.zip py_client.zip
